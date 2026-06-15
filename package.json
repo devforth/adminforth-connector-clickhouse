@@ -1,10 +1,10 @@
 {
-  "name": "@adminforth/connector-mongo",
+  "name": "@adminforth/connector-clickhouse",
   "version": "1.0.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
-  "homepage": "https://adminforth.dev/docs/tutorial/Plugins/connector-mongo/",
+  "homepage": "https://adminforth.dev/docs/tutorial/Plugins/connector-clickhouse/",
   "publishConfig": {
     "access": "public"
   },
@@ -44,7 +44,7 @@
       [
         "semantic-release-slack-bot",
         {
-          "packageName": "@adminforth/connector-mongo",
+          "packageName": "@adminforth/connector-clickhouse",
           "notifyOnSuccess": true,
           "notifyOnFail": true,
           "slackIcon": ":package:",
