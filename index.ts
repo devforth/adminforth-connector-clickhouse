@@ -4,7 +4,7 @@ import utc from 'dayjs/plugin/utc.js';
 import { createClient } from '@clickhouse/client'
 
 import { AdminForthDataTypes, AdminForthFilterOperators, AdminForthSortDirections } from 'adminforth';
-import { afLogger } from 'adminforth';
+import { afLogger, checkIfFieldIsInsideResourceColumns } from 'adminforth';
 
 dayjs.extend(utc);
 
@@ -535,6 +535,10 @@ class ClickhouseConnector extends AdminForthBaseConnector implements IAdminForth
       const tableName = resource.table;
 
       const { where, params } = this.whereClause(resource, filters);
+
+      if (sort.some(s => !checkIfFieldIsInsideResourceColumns(s.field, resource))) {
+        throw new Error(`Invalid sort field: ${sort.find(s => !checkIfFieldIsInsideResourceColumns(s.field, resource))?.field}`);
+      }
 
       const orderBy = sort.length ? `ORDER BY ${sort.map((s) => `${s.field} ${this.SortDirectionsMap[s.direction]}`).join(', ')}` : '';
       
