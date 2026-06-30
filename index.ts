@@ -87,7 +87,26 @@ class ClickhouseConnector extends AdminForthBaseConnector implements IAdminForth
       sampleValue: (sampleRow as any)[col.name],
     }));
   }
-  
+
+  async isDatabaseEmpty(): Promise<boolean> {
+    const res = await this.client.query({
+      query: `
+        SELECT database, name, engine
+        FROM system.tables
+        WHERE database = {database:String}
+          AND database NOT IN ('system', 'information_schema', 'INFORMATION_SCHEMA')
+          AND is_temporary = 0
+        LIMIT 1
+      `,
+      format: 'JSONEachRow',
+      query_params: {
+        database: this.dbName,
+      },
+    });
+    const rows = await res.json();
+    return rows.length === 0;
+  }
+
     async discoverFields(resource: AdminForthResource): Promise<{[key: string]: AdminForthResourceColumn}> {
         const tableName = resource.table;
 
@@ -670,8 +689,8 @@ class ClickhouseConnector extends AdminForthBaseConnector implements IAdminForth
       return recordIds.length;
     }
 
-    close() {
-      this.client.disconnect();
+    async close() {
+      await this.client.close();
     }
 }
 
